@@ -297,11 +297,15 @@ function setupIPC() {
     sendToAudio('audio:seek', time);
   });
 
+  let timeUpdateCount = 0;
   ipcMain.on('audio:time-update', (event, data) => {
     if (player) {
       player.currentTime = data.currentTime;
       player.duration = data.duration;
-      broadcast('player:state-changed', player.getState());
+      timeUpdateCount++;
+      if (timeUpdateCount % 3 === 0) {
+        broadcast('player:state-changed', player.getState());
+      }
     }
   });
 

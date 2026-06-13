@@ -23,8 +23,12 @@ function initAudio() {
 
 window.electronAPI.audio.onPlay((filePath) => {
   initAudio();
-  if (currentPath === filePath && !audioElement.paused) {
-    audioElement.pause();
+  if (currentPath === filePath) {
+    if (audioElement.paused) {
+      audioElement.play().catch(err => console.error('Resume error:', err));
+    } else {
+      audioElement.pause();
+    }
     return;
   }
   currentPath = filePath;

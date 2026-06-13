@@ -35,15 +35,12 @@ class PlayerEngine {
     this._stopTick();
     this._tickInterval = setInterval(() => {
       if (this.isPlaying && this.currentTrack) {
-        this.currentTime += 1;
         const dur = this.duration || this.currentTrack.duration || 0;
-        if (dur > 0 && this.currentTime >= dur) {
+        if (dur > 0 && this.currentTime >= dur && dur > 1) {
           this.next();
-        } else {
-          this.onPlayState(this.getState());
         }
       }
-    }, 1000);
+    }, 2000);
   }
 
   _stopTick() {
