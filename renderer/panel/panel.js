@@ -604,7 +604,37 @@ async function init() {
       ? `<img src="${track.cover}" alt="封面">`
       : '<div class="cover-placeholder">♪</div>';
     currentTrackPath = track.path;
+    document.querySelectorAll('.track-item').forEach(el => {
+      el.classList.toggle('active', el.dataset.id === track.id);
+    });
   }
+
+  async function syncPlayerState() {
+    const track = await window.electronAPI.player.getTrack();
+    const state = await window.electronAPI.player.getState();
+    if (track && track.path !== currentTrackPath) {
+      trackTitle.textContent = track.title;
+      trackArtist.textContent = track.artist;
+      coverArt.innerHTML = track.cover
+        ? `<img src="${track.cover}" alt="封面">`
+        : '<div class="cover-placeholder">♪</div>';
+      currentTrackPath = track.path;
+      document.querySelectorAll('.track-item').forEach(el => {
+        el.classList.toggle('active', el.dataset.id === track.id);
+      });
+    }
+    if (state) {
+      isPlaying = state.isPlaying;
+      btnPlay.textContent = isPlaying ? '⏸' : '▶';
+      if (!progressBar.dataset.dragging) {
+        progressBar.max = state.duration || 0;
+        timeTotal.textContent = formatTime(state.duration);
+        timeCurrent.textContent = formatTime(state.currentTime);
+      }
+    }
+  }
+  setTimeout(syncPlayerState, 500);
+  setInterval(syncPlayerState, 1000);
 }
 
 init();
