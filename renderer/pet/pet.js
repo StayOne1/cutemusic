@@ -59,6 +59,11 @@ petBody.addEventListener('contextmenu', (e) => {
   window.electronAPI.pet.showMenu();
 });
 
+petBody.addEventListener('wheel', (e) => {
+  e.preventDefault();
+  window.electronAPI.pet.resize(e.deltaY > 0 ? -10 : 10);
+}, { passive: false });
+
 window.electronAPI.trackInfo((info) => {
   if (info) {
     showTooltip(`${info.title} - ${info.artist}`);

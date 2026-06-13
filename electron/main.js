@@ -176,6 +176,17 @@ function setupIPC() {
 
   ipcMain.on('pet:quit', () => app.quit());
 
+  ipcMain.on('pet:resize', (event, delta) => {
+    let size = store.get('petSize', 200);
+    size = Math.max(60, Math.min(600, size + delta));
+    store.set('petSize', size);
+    if (petWindow && !petWindow.isDestroyed()) {
+      const [wx, wy] = petWindow.getPosition();
+      petWindow.setBounds({ x: wx, y: wy, width: size, height: size });
+    }
+    broadcast('pet:size-changed', size);
+  });
+
   ipcMain.on('pet:show-menu', () => {
     const isPlaying = player && player.isPlaying;
     const hasTracks = player && player.tracks && player.tracks.length > 0;

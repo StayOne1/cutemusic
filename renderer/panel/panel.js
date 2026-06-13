@@ -504,6 +504,11 @@ window.electronAPI.scan.onLibraryUpdate((data) => {
   }
 });
 
+window.electronAPI.onPetSizeChanged((size) => {
+  petSizeSlider.value = size;
+  petSizeLabel.textContent = `${size}px`;
+});
+
 async function init() {
   setupShortcutInputs();
 

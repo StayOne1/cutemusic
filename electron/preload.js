@@ -7,6 +7,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
     hide: () => ipcRenderer.send('pet:hide'),
     quit: () => ipcRenderer.send('pet:quit'),
     showMenu: () => ipcRenderer.send('pet:show-menu'),
+    resize: (delta) => ipcRenderer.send('pet:resize', delta),
   },
   panel: {
     open: () => ipcRenderer.send('panel:open'),
@@ -58,6 +59,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   },
   trackInfo: (cb) => ipcRenderer.on('track-info', (e, info) => cb(info)),
   petState: (cb) => ipcRenderer.on('pet:state', (e, state) => cb(state)),
+  onPetSizeChanged: (cb) => ipcRenderer.on('pet:size-changed', (e, size) => cb(size)),
   audio: {
     play: (path) => ipcRenderer.send('audio:play', path),
     pause: () => ipcRenderer.send('audio:pause'),
