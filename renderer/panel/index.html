@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>CuteMusic</title>
+  <link rel="stylesheet" href="panel.css">
+</head>
+<body>
+  <div id="app" class="app">
+    <div class="titlebar">
+      <div class="titlebar-title">♪ CuteMusic</div>
+      <div class="titlebar-buttons">
+        <button id="btn-minimize" class="titlebar-btn" title="最小化">─</button>
+        <button id="btn-close" class="titlebar-btn close" title="关闭">✕</button>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" data-tab="player">▶ 播放</button>
+      <button class="tab" data-tab="playlist">♫ 歌单</button>
+      <button class="tab" data-tab="settings">⚙ 设置</button>
+    </div>
+
+    <div id="tab-player" class="tab-content active">
+      <div class="player-section">
+        <div class="cover-art" id="cover-art">
+          <div class="cover-placeholder">♪</div>
+        </div>
+        <div class="track-info">
+          <div class="track-title" id="track-title">暂无歌曲</div>
+          <div class="track-artist" id="track-artist">添加音乐开始播放</div>
+        </div>
+        <div class="progress-container">
+          <span class="time" id="time-current">0:00</span>
+          <input type="range" id="progress-bar" class="progress-bar" min="0" max="100" value="0">
+          <span class="time" id="time-total">0:00</span>
+        </div>
+        <div class="controls">
+          <button id="btn-mode" class="ctrl-btn mode-btn" title="播放模式">↻</button>
+          <button id="btn-prev" class="ctrl-btn" title="上一曲">⏮</button>
+          <button id="btn-play" class="ctrl-btn play-btn" title="播放/暂停">▶</button>
+          <button id="btn-next" class="ctrl-btn" title="下一曲">⏭</button>
+          <button id="btn-mute" class="ctrl-btn" title="静音">🔊</button>
+        </div>
+        <div class="volume-container">
+          <input type="range" id="volume-bar" class="volume-bar" min="0" max="100" value="80">
+        </div>
+      </div>
+    </div>
+
+    <div id="tab-playlist" class="tab-content">
+      <div class="playlist-section">
+        <div class="playlist-sidebar">
+          <div class="playlist-header">
+            <span>歌单列表</span>
+            <button id="btn-new-playlist" class="small-btn" title="新建歌单">+</button>
+          </div>
+          <div id="playlist-list" class="playlist-list"></div>
+        </div>
+        <div class="track-list-panel">
+          <div class="track-list-header">
+            <span id="current-playlist-name">所有歌曲</span>
+            <button id="btn-add-files" class="small-btn" title="添加文件">+ 文件</button>
+            <button id="btn-add-dir" class="small-btn" title="添加文件夹">+ 目录</button>
+          </div>
+          <div class="search-bar">
+            <input type="text" id="search-input" placeholder="搜索歌曲...">
+          </div>
+          <div id="track-list" class="track-list"></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="tab-settings" class="tab-content">
+      <div class="settings-section">
+        <div class="setting-group">
+          <h3>音乐目录</h3>
+          <div id="music-dirs" class="music-dirs"></div>
+          <button id="btn-add-music-dir" class="setting-btn">+ 添加目录</button>
+        </div>
+        <div class="setting-group">
+          <h3>快捷键</h3>
+          <div class="shortcut-list">
+            <div class="shortcut-row">
+              <span>播放/暂停</span>
+              <input type="text" id="shortcut-play" class="shortcut-input" value="" placeholder="点击设置">
+            </div>
+            <div class="shortcut-row">
+              <span>下一曲</span>
+              <input type="text" id="shortcut-next" class="shortcut-input" value="" placeholder="点击设置">
+            </div>
+            <div class="shortcut-row">
+              <span>上一曲</span>
+              <input type="text" id="shortcut-prev" class="shortcut-input" value="" placeholder="点击设置">
+            </div>
+            <div class="shortcut-row">
+              <span>音量+</span>
+              <input type="text" id="shortcut-volup" class="shortcut-input" value="" placeholder="点击设置">
+            </div>
+            <div class="shortcut-row">
+              <span>音量-</span>
+              <input type="text" id="shortcut-voldown" class="shortcut-input" value="" placeholder="点击设置">
+            </div>
+            <div class="shortcut-row">
+              <span>静音</span>
+              <input type="text" id="shortcut-mute" class="shortcut-input" value="" placeholder="点击设置">
+            </div>
+          </div>
+          <button id="btn-save-shortcuts" class="setting-btn" style="margin-top: 12px;">保存快捷键设置</button>
+        </div>
+        <div class="setting-group">
+          <h3>桌宠大小</h3>
+          <input type="range" id="pet-size" class="setting-range" min="60" max="600" value="200">
+          <span id="pet-size-label">200px</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="modal-overlay" class="modal-overlay hidden">
+    <div class="modal">
+      <div class="modal-title">新建歌单</div>
+      <input type="text" id="modal-input" class="modal-input" placeholder="请输入歌单名称">
+      <div class="modal-buttons">
+        <button id="modal-cancel" class="modal-btn cancel">取消</button>
+        <button id="modal-confirm" class="modal-btn confirm">确定</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="panel.js"></script>
+</body>
+</html>
