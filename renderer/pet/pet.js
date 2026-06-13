@@ -96,6 +96,19 @@ window.electronAPI.petState((state) => {
   }
 });
 
+window.electronAPI.onPetImageLoad((imgSrc) => {
+  const img = document.querySelector('.rem-image img');
+  if (img) img.src = imgSrc;
+});
+
+window.electronAPI.petImage.onImageChanged((fileName) => {
+  const img = document.querySelector('.rem-image img');
+  if (img) {
+    const imgPath = `../../data/pet-images/${fileName}`;
+    img.src = imgPath;
+  }
+});
+
 function showTooltip(text) {
   tooltipText.textContent = text;
   trackTooltip.classList.remove('hidden');

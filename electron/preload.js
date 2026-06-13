@@ -60,6 +60,13 @@ contextBridge.exposeInMainWorld('electronAPI', {
   trackInfo: (cb) => ipcRenderer.on('track-info', (e, info) => cb(info)),
   petState: (cb) => ipcRenderer.on('pet:state', (e, state) => cb(state)),
   onPetSizeChanged: (cb) => ipcRenderer.on('pet:size-changed', (e, size) => cb(size)),
+  onPetImageLoad: (cb) => ipcRenderer.on('pet:image-load', (e, src) => cb(src)),
+  petImage: {
+    getImages: () => ipcRenderer.invoke('pet:get-images'),
+    importImage: () => ipcRenderer.invoke('pet:import-image'),
+    setImage: (fileName) => ipcRenderer.invoke('pet:set-image', fileName),
+    onImageChanged: (cb) => ipcRenderer.on('pet:image-changed', (e, fileName) => cb(fileName)),
+  },
   audio: {
     play: (path) => ipcRenderer.send('audio:play', path),
     pause: () => ipcRenderer.send('audio:pause'),

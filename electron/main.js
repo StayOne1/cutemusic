@@ -19,6 +19,7 @@ let scanner = null;
 let playlistManager = null;
 
 const isDev = process.argv.includes('--dev');
+const petImagesDir = path.join(__dirname, '..', 'data', 'pet-images');
 
 function createAudioWindow() {
   if (audioWindow && !audioWindow.isDestroyed()) return;
@@ -92,6 +93,11 @@ function createPetWindow() {
     },
   });
   petWindow.loadFile(path.join(__dirname, '..', 'renderer', 'pet', 'index.html'));
+  petWindow.webContents.on('did-finish-load', () => {
+    const petImage = store.get('petImage', 'rem.jpg');
+    const imgPath = path.join(petImagesDir, petImage).replace(/\\/g, '/');
+    petWindow.webContents.send('pet:image-load', `file:///${imgPath}`);
+  });
   petWindow.once('ready-to-show', () => petWindow.showInactive());
   if (isDev) petWindow.webContents.openDevTools({ mode: 'detach' });
   petWindow.on('close', () => {
@@ -369,6 +375,29 @@ function setupIPC() {
 
   ipcMain.handle('config:get', (event, key) => store.get(key));
   ipcMain.handle('config:set', (event, key, value) => store.set(key, value));
+
+  ipcMain.handle('pet:get-images', () => {
+    return fs.readdirSync(petImagesDir).filter(f => /\.(jpg|jpeg|png)$/i.test(f));
+  });
+
+  ipcMain.handle('pet:import-image', async () => {
+    const { dialog } = require('electron');
+    const result = await dialog.showOpenDialog({
+      properties: ['openFile'],
+      filters: [{ name: 'Images', extensions: ['jpg', 'jpeg', 'png'] }],
+    });
+    if (result.canceled || !result.filePaths[0]) return null;
+    const srcPath = result.filePaths[0];
+    const fileName = path.basename(srcPath);
+    const destPath = path.join(petImagesDir, fileName);
+    fs.copyFileSync(srcPath, destPath);
+    return fileName;
+  });
+
+  ipcMain.handle('pet:set-image', (event, fileName) => {
+    store.set('petImage', fileName);
+    broadcast('pet:image-changed', fileName);
+  });
 
   ipcMain.handle('dialog:open-directory', async () => {
     const { dialog } = require('electron');

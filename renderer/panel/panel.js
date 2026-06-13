@@ -279,6 +279,44 @@ petSizeSlider.addEventListener('input', (e) => {
   window.electronAPI.panel.setPetSize(size);
 });
 
+const petImageSelect = document.getElementById('pet-image-select');
+const btnImportImage = document.getElementById('btn-import-image');
+const petImagePreview = document.getElementById('pet-image-preview');
+
+async function loadPetImages() {
+  const images = await window.electronAPI.petImage.getImages();
+  const currentImage = await window.electronAPI.config.get('petImage');
+  petImageSelect.innerHTML = '';
+  images.forEach(img => {
+    const opt = document.createElement('option');
+    opt.value = img;
+    opt.textContent = img;
+    if (img === currentImage) opt.selected = true;
+    petImageSelect.appendChild(opt);
+  });
+  updatePetImagePreview(currentImage);
+}
+
+function updatePetImagePreview(fileName) {
+  petImagePreview.innerHTML = `<img src="../../data/pet-images/${fileName}" alt="桌宠预览">`;
+}
+
+petImageSelect.addEventListener('change', async () => {
+  const fileName = petImageSelect.value;
+  await window.electronAPI.petImage.setImage(fileName);
+  updatePetImagePreview(fileName);
+});
+
+btnImportImage.addEventListener('click', async () => {
+  const fileName = await window.electronAPI.petImage.importImage();
+  if (fileName) {
+    await loadPetImages();
+    petImageSelect.value = fileName;
+    await window.electronAPI.petImage.setImage(fileName);
+    updatePetImagePreview(fileName);
+  }
+});
+
 async function loadPlaylists() {
   playlists = await window.electronAPI.playlist.getAll();
   renderPlaylists();
@@ -527,6 +565,8 @@ async function init() {
     petSizeSlider.value = size;
     petSizeLabel.textContent = `${size}px`;
   }
+
+  await loadPetImages();
 
   const shortcuts = await window.electronAPI.config.get('shortcuts');
   if (shortcuts) {

@@ -27,6 +27,7 @@ const store = new Store({
     },
     autoStart: false,
     petSize: 200,
+    petImage: 'rem.jpg',
     themeHue: 250,
     lastPlaylist: null,
   },
