@@ -25,8 +25,7 @@ const playlistList = document.getElementById('playlist-list');
 const trackList = document.getElementById('track-list');
 const searchInput = document.getElementById('search-input');
 const btnNewPlaylist = document.getElementById('btn-new-playlist');
-const btnAddFiles = document.getElementById('btn-add-files');
-const btnAddDir = document.getElementById('btn-add-dir');
+
 const currentPlaylistName = document.getElementById('current-playlist-name');
 
 const musicDirs = document.getElementById('music-dirs');
@@ -228,35 +227,6 @@ btnSaveShortcuts.addEventListener('click', async () => {
   };
   await window.electronAPI.panel.updateShortcuts(shortcuts);
   alert('快捷键已保存并生效！');
-});
-
-btnAddFiles.addEventListener('click', async () => {
-  const files = await window.electronAPI.dialog.openFiles();
-  if (files.length === 0) return;
-  const tracks = await window.electronAPI.scan.rescan();
-  allTracks = tracks;
-  if (currentPlaylistId) {
-    const playlist = await window.electronAPI.playlist.get(currentPlaylistId);
-    if (playlist) {
-      const existingPaths = new Set(playlist.tracks.map(t => t.path));
-      const newTracks = tracks.filter(t => !existingPaths.has(t.path));
-      playlist.tracks.push(...newTracks);
-      await window.electronAPI.playlist.update(playlist);
-      await loadPlaylists();
-    }
-  }
-  renderTrackList();
-});
-
-btnAddDir.addEventListener('click', async () => {
-  const dir = await window.electronAPI.dialog.openDirectory();
-  if (dir) {
-    await window.electronAPI.scan.addDirectory(dir);
-    const tracks = await window.electronAPI.scan.rescan();
-    allTracks = tracks;
-    renderTrackList();
-    loadMusicDirs();
-  }
 });
 
 btnAddMusicDir.addEventListener('click', async () => {
