@@ -512,6 +512,9 @@ window.electronAPI.player.onTrackChanged((track) => {
       el.classList.toggle('active', el.dataset.id === track.id);
     });
     currentTrackPath = track.path;
+    progressBar.value = 0;
+    timeCurrent.textContent = '0:00';
+    timeTotal.textContent = formatTime(track.duration);
   }
 });
 
@@ -619,6 +622,8 @@ async function init() {
         ? `<img src="${track.cover}" alt="封面">`
         : '<div class="cover-placeholder">♪</div>';
       currentTrackPath = track.path;
+      progressBar.value = 0;
+      timeCurrent.textContent = '0:00';
       document.querySelectorAll('.track-item').forEach(el => {
         el.classList.toggle('active', el.dataset.id === track.id);
       });
