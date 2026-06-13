@@ -427,6 +427,18 @@ async function loadMusicDirs() {
       await window.electronAPI.scan.removeDirectory(dir);
       const tracks = await window.electronAPI.scan.rescan();
       allTracks = tracks;
+      const validPaths = new Set(tracks.map(t => t.path));
+      for (const pl of playlists) {
+        const playlist = await window.electronAPI.playlist.get(pl.id);
+        if (playlist) {
+          const filtered = playlist.tracks.filter(t => validPaths.has(t.path));
+          if (filtered.length !== playlist.tracks.length) {
+            playlist.tracks = filtered;
+            await window.electronAPI.playlist.update(playlist);
+          }
+        }
+      }
+      await loadPlaylists();
       renderTrackList();
       loadMusicDirs();
     });
