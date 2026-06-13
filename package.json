@@ -17,18 +17,27 @@
   "license": "MIT",
   "type": "commonjs",
   "dependencies": {
-    "electron": "^42.4.0",
     "electron-store": "^11.0.2",
     "music-metadata": "^11.13.0"
   },
   "devDependencies": {
+    "electron": "^42.4.0",
     "electron-builder": "^26.15.3"
   },
   "build": {
     "appId": "com.cutemusic.app",
     "productName": "CuteMusic",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "electron/**/*",
+      "renderer/**/*",
+      "data/**/*",
+      "package.json"
+    ],
     "win": {
-      "target": "nsis",
+      "target": "portable",
       "icon": "build/resources/icon.ico"
     },
     "nsis": {
