@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, Menu, screen, nativeImage } = require('electron');
+const { app, BrowserWindow, ipcMain, Menu, screen, nativeImage, protocol, net } = require('electron');
 const path = require('path');
 const fs = require('fs');
 const { createTray } = require('./tray');
@@ -17,9 +17,14 @@ let updateTrayMenu = null;
 let player = null;
 let scanner = null;
 let playlistManager = null;
+const coverPathMap = new Map();
 
 const isDev = process.argv.includes('--dev');
 const petImagesDir = path.join(__dirname, '..', 'data', 'pet-images');
+
+protocol.registerSchemesAsPrivileged([
+  { scheme: 'cover', privileges: { bypassCSP: true, supportFetchAPI: true, stream: true } }
+]);
 
 function createAudioWindow() {
   if (audioWindow && !audioWindow.isDestroyed()) return;
@@ -141,6 +146,18 @@ function sendToPanel(channel, data) {
 function broadcast(channel, data) {
   sendToPet(channel, data);
   sendToPanel(channel, data);
+}
+
+function prepareTracks(tracks) {
+  tracks.forEach(t => {
+    if (t.coverPath) {
+      coverPathMap.set(t.id, t.coverPath);
+      t.cover = `cover://${t.id}`;
+    } else {
+      t.cover = null;
+    }
+  });
+  return tracks;
 }
 
 function setupIPC() {
@@ -347,6 +364,7 @@ function setupIPC() {
     if (scanner) {
       const allDirs = store.get('musicDirs', []);
       const tracks = await scanner.scanAll(allDirs);
+      prepareTracks(tracks);
       player.setTracks(tracks);
       broadcast('library:update', { tracks, dirs: allDirs });
       return tracks;
@@ -363,6 +381,7 @@ function setupIPC() {
     if (scanner) {
       const dirs = store.get('musicDirs', []);
       const tracks = await scanner.scanAll(dirs);
+      prepareTracks(tracks);
       player.setTracks(tracks);
       broadcast('library:update', { tracks, dirs });
       return tracks;
@@ -419,6 +438,20 @@ function setupIPC() {
 }
 
 app.whenReady().then(() => {
+  protocol.handle('cover', (request) => {
+    const trackId = request.url.replace('cover://', '');
+    const coverFile = coverPathMap.get(trackId);
+    if (coverFile && fs.existsSync(coverFile)) {
+      const data = fs.readFileSync(coverFile);
+      const ext = path.extname(coverFile).toLowerCase();
+      const mime = ext === '.png' ? 'image/png' : 'image/jpeg';
+      return new Response(data, {
+        headers: { 'Content-Type': mime }
+      });
+    }
+    return new Response(null, { status: 404 });
+  });
+
   scanner = new MusicScanner();
   playlistManager = new PlaylistManager();
   player = new PlayerEngine({
@@ -441,6 +474,7 @@ app.whenReady().then(() => {
   const dirs = store.get('musicDirs', []);
   if (dirs.length > 0) {
     scanner.scanAll(dirs).then(tracks => {
+      prepareTracks(tracks);
       player.setTracks(tracks);
       broadcast('library:update', { tracks, dirs });
     });

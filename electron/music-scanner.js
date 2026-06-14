@@ -25,6 +25,7 @@ class MusicScanner {
         if (SUPPORTED_EXTENSIONS.includes(ext)) {
           try {
             const metadata = await mm.parseFile(fullPath, { duration: true });
+            const coverPath = this.findCoverPath(fullPath, metadata);
             const track = {
               id: this.generateId(fullPath),
               path: fullPath,
@@ -34,14 +35,13 @@ class MusicScanner {
               duration: metadata.format.duration || 0,
               year: metadata.common.year,
               genre: metadata.common.genre ? metadata.common.genre[0] : null,
-              cover: metadata.common.picture
-                ? this.extractCover(metadata.common.picture[0])
-                : null,
+              coverPath: coverPath,
               dir: dirPath,
             };
             tracks.push(track);
             this.scanCache.set(fullPath, track);
           } catch (err) {
+            const coverPath = this.findCoverPath(fullPath, null);
             const track = {
               id: this.generateId(fullPath),
               path: fullPath,
@@ -50,6 +50,7 @@ class MusicScanner {
               album: 'Unknown Album',
               duration: 0,
               dir: dirPath,
+              coverPath: coverPath,
             };
             tracks.push(track);
           }
@@ -69,11 +70,41 @@ class MusicScanner {
     return allTracks;
   }
 
-  extractCover(picture) {
-    if (!picture) return null;
-    const base64 = picture.data.toString('base64');
-    const mimeType = picture.format || 'image/jpeg';
-    return `data:${mimeType};base64,${base64}`;
+  findCoverPath(audioPath, metadata) {
+    if (metadata && metadata.common.picture && metadata.common.picture.length > 0) {
+      const picture = metadata.common.picture[0];
+      if (picture && picture.data) {
+        try {
+          const buf = Buffer.from(picture.data);
+          if (buf.length > 0) {
+            const coverDir = path.join(path.dirname(audioPath), '.cutemusic-covers');
+            if (!fs.existsSync(coverDir)) {
+              fs.mkdirSync(coverDir, { recursive: true });
+            }
+            const ext = (picture.format || 'image/jpeg').includes('png') ? '.png' : '.jpg';
+            const coverFile = path.join(coverDir, this.generateId(audioPath) + ext);
+            fs.writeFileSync(coverFile, buf);
+            return coverFile;
+          }
+        } catch (err) {
+          // fall through to external file search
+        }
+      }
+    }
+
+    const parsed = path.parse(audioPath);
+    const exts = ['.jpg', '.jpeg', '.png'];
+    for (const ext of exts) {
+      const coverPath = path.join(parsed.dir, parsed.name + ext);
+      try {
+        if (fs.existsSync(coverPath)) {
+          return coverPath;
+        }
+      } catch (err) {
+        // ignore
+      }
+    }
+    return null;
   }
 
   generateId(filePath) {
