@@ -176,7 +176,7 @@ npm start
 ## 💬 联系方式
 
 - **邮箱**：[hkxhyt@outlook.com](mailto:hkxhyt@outlook.com)
-- **GitHub**：[@your-username](https://github.com/your-username)
+- **GitHub**：[@StayOne1](https://github.com/StayOne1)
 
 ---
 
@@ -184,6 +184,6 @@ npm start
 
 **如果这个项目对你有帮助，欢迎点个 ⭐ Star 支持一下！**
 
-Made with ❤️ by hkxhyt
+Made with ❤️ by 尤一
 
 </div>
