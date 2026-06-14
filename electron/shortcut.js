@@ -15,10 +15,10 @@ function registerShortcuts(player, audioSender) {
         if (audioSender) audioSender('audio:pause');
         player.pause();
       } else {
+        player.play();
         if (player.currentTrack && audioSender) {
           audioSender('audio:play', player.currentTrack.path);
         }
-        player.play();
       }
     },
     next: () => {
