@@ -87,6 +87,13 @@ function createPetWindow() {
     posY = savedY !== null ? savedY : workY + screenHeight - petSize - 50;
   }
 
+  const minX = workX - petSize + 50;
+  const maxX = workX + screenWidth - 50;
+  const minY = workY - petSize + 50;
+  const maxY = workY + screenHeight - 50;
+  if (posX < minX || posX > maxX) posX = workX + screenWidth - petSize - 50;
+  if (posY < minY || posY > maxY) posY = workY + screenHeight - petSize - 50;
+
   petWindow = new BrowserWindow({
     width: petSize, height: petSize,
     x: posX, y: posY,
