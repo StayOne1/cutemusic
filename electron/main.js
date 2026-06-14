@@ -344,7 +344,7 @@ function setupIPC() {
     if (win) { const [wx, wy] = win.getPosition(); win.setPosition(wx + x, wy + y); }
   });
   ipcMain.on('panel:set-pet-size', (event, size) => { store.set('petSize', size); createPetWindow(); });
-  ipcMain.on('shortcuts:update', (event, shortcuts) => { store.set('shortcuts', shortcuts); registerShortcuts(player); });
+  ipcMain.on('shortcuts:update', (event, shortcuts) => { store.set('shortcuts', shortcuts); registerShortcuts(player, sendToAudio); });
 
   ipcMain.handle('player:play', (event, trackId) => { if (player) player.play(trackId); });
   ipcMain.handle('player:pause', () => { if (player) player.pause(); });
@@ -468,7 +468,7 @@ app.whenReady().then(() => {
   const trayResult = createTray({ createPanelWindow, player, petWindow: () => petWindow, broadcastFn: broadcast, audioSender: sendToAudio });
   tray = trayResult.tray;
   updateTrayMenu = trayResult.updateTrayMenu;
-  registerShortcuts(player);
+  registerShortcuts(player, sendToAudio);
   setupIPC();
 
   const dirs = store.get('musicDirs', []);

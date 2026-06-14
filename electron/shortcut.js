@@ -3,15 +3,34 @@ const { store } = require('./store');
 
 let registeredShortcuts = [];
 
-function registerShortcuts(player) {
+function registerShortcuts(player, audioSender) {
   unregisterShortcuts();
 
   const shortcuts = store.get('shortcuts', {});
 
   const actions = {
-    playPause: () => player && player.toggle(),
-    next: () => player && player.next(),
-    prev: () => player && player.prev(),
+    playPause: () => {
+      if (!player) return;
+      if (player.isPlaying) {
+        if (audioSender) audioSender('audio:pause');
+        player.pause();
+      } else {
+        if (player.currentTrack && audioSender) {
+          audioSender('audio:play', player.currentTrack.path);
+        }
+        player.play();
+      }
+    },
+    next: () => {
+      if (!player) return;
+      player.next();
+      if (player.currentTrack && audioSender) audioSender('audio:play', player.currentTrack.path);
+    },
+    prev: () => {
+      if (!player) return;
+      player.prev();
+      if (player.currentTrack && audioSender) audioSender('audio:play', player.currentTrack.path);
+    },
     volumeUp: () => {
       if (player) {
         const vol = Math.min(100, player.volume + 5);

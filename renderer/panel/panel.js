@@ -506,6 +506,7 @@ window.electronAPI.player.onStateChanged((state) => {
     btnPlay.textContent = isPlaying ? '⏸' : '▶';
     if (!progressBar.dataset.dragging) {
       progressBar.max = state.duration || 0;
+      progressBar.value = state.currentTime || 0;
       timeTotal.textContent = formatTime(state.duration);
       timeCurrent.textContent = formatTime(state.currentTime);
     }
