@@ -459,26 +459,44 @@ function escapeHtml(str) {
   return div.innerHTML;
 }
 
+let activeShortcutInput = null;
+
 function setupShortcutInputs() {
   const shortcutIds = ['shortcut-play', 'shortcut-next', 'shortcut-prev', 'shortcut-volup', 'shortcut-voldown', 'shortcut-mute'];
+
+  document.addEventListener('keydown', (e) => {
+    if (!activeShortcutInput) return;
+    e.preventDefault();
+    e.stopPropagation();
+    const parts = [];
+    if (e.ctrlKey || e.metaKey) parts.push('CommandOrControl');
+    if (e.altKey) parts.push('Alt');
+    if (e.shiftKey) parts.push('Shift');
+    if (!['Control', 'Alt', 'Shift', 'Meta'].includes(e.key)) {
+      parts.push(e.key.length === 1 ? e.key.toUpperCase() : e.key);
+      activeShortcutInput.value = parts.join('+');
+      activeShortcutInput.style.borderColor = '';
+      activeShortcutInput.blur();
+      activeShortcutInput = null;
+    }
+  }, true);
+
   shortcutIds.forEach(id => {
     const input = document.getElementById(id);
     input.readOnly = true;
     input.style.cursor = 'pointer';
-    input.addEventListener('focus', () => { input.value = '请按下快捷键...'; input.style.borderColor = '#8B5CF6'; });
-    input.addEventListener('blur', () => { input.style.borderColor = ''; });
-    input.addEventListener('keydown', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      const parts = [];
-      if (e.ctrlKey || e.metaKey) parts.push('CommandOrControl');
-      if (e.altKey) parts.push('Alt');
-      if (e.shiftKey) parts.push('Shift');
-      if (!['Control', 'Alt', 'Shift', 'Meta'].includes(e.key)) {
-        parts.push(e.key.length === 1 ? e.key.toUpperCase() : e.key);
-        input.value = parts.join('+');
-        input.blur();
-      }
+    input.addEventListener('focus', () => {
+      activeShortcutInput = input;
+      input.value = '请按下快捷键...';
+      input.style.borderColor = '#8B5CF6';
+    });
+    input.addEventListener('blur', () => {
+      activeShortcutInput = null;
+      input.style.borderColor = '';
+    });
+    input.addEventListener('click', () => {
+      input.focus();
+      input.select();
     });
   });
 }
