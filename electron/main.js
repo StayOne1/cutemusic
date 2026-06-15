@@ -355,9 +355,26 @@ function setupIPC() {
 
   ipcMain.handle('player:play', (event, trackId) => { if (player) player.play(trackId); });
   ipcMain.handle('player:pause', () => { if (player) player.pause(); });
-  ipcMain.handle('player:toggle', () => { if (player) player.toggle(); });
-  ipcMain.handle('player:next', () => { if (player) player.next(); });
-  ipcMain.handle('player:prev', () => { if (player) player.prev(); });
+  ipcMain.handle('player:toggle', () => {
+    if (!player) return;
+    if (player.isPlaying) {
+      sendToAudio('audio:pause');
+      player.pause();
+    } else {
+      player.play();
+      if (player.currentTrack) sendToAudio('audio:play', player.currentTrack.path);
+    }
+  });
+  ipcMain.handle('player:next', () => {
+    if (!player) return;
+    player.next();
+    if (player.currentTrack) sendToAudio('audio:play', player.currentTrack.path);
+  });
+  ipcMain.handle('player:prev', () => {
+    if (!player) return;
+    player.prev();
+    if (player.currentTrack) sendToAudio('audio:play', player.currentTrack.path);
+  });
   ipcMain.handle('player:seek', (event, time) => { if (player) player.seek(time); });
   ipcMain.handle('player:set-volume', (event, volume) => { if (player) player.setVolume(volume); store.set('volume', volume); });
   ipcMain.handle('player:toggle-mute', () => { if (player) player.toggleMute(); });
