@@ -9,7 +9,7 @@
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Platform](https://img.shields.io/badge/Platform-Windows-0078D4?logo=windows&logoColor=white)]()
 
-<img src="1.jpg" width="400" alt="CuteMusic 截图">
+<img src="renderer\assets\rem.jpg" width="400" alt="CuteMusic 截图">
 
 </div>
 
