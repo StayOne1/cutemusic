@@ -37,8 +37,6 @@ body {
   height: 100%;
   border-radius: 50%;
   overflow: hidden;
-  box-shadow: 0 8px 32px rgba(124, 58, 237, 0.5),
-              0 0 0 3px rgba(167, 139, 250, 0.3);
   position: relative;
   background: transparent;
 }
@@ -89,8 +87,9 @@ body {
 .note {
   position: absolute;
   font-size: 18px;
-  color: #38bdf8;
+  color: #60a5fa;
   animation: floatNote 2s ease-in-out infinite;
+  filter: drop-shadow(0 2px 4px rgba(96, 165, 250, 0.3));
 }
 
 .note.n1 { left: -30px; animation-delay: 0s; }
@@ -102,8 +101,8 @@ body {
   bottom: -35px;
   left: 50%;
   transform: translateX(-50%);
-  background: linear-gradient(135deg, rgba(56, 189, 248, 0.95), rgba(124, 58, 237, 0.95));
-  color: white;
+  background: rgba(30, 27, 75, 0.92);
+  color: #e2e8f0;
   padding: 6px 14px;
   border-radius: 12px;
   font-size: 11px;
@@ -112,7 +111,8 @@ body {
   max-width: 220px;
   overflow: hidden;
   text-overflow: ellipsis;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.25);
+  border: 1px solid rgba(139, 92, 246, 0.25);
   pointer-events: none;
   transition: opacity 0.3s, transform 0.3s;
 }
@@ -128,15 +128,15 @@ body {
 }
 
 @keyframes remBreathe {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-2px); }
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-3px) scale(1.01); }
 }
 
 @keyframes remBounce {
-  0%, 100% { transform: rotate(-1deg); }
-  25% { transform: rotate(1deg); }
-  50% { transform: rotate(-0.5deg); }
-  75% { transform: rotate(0.5deg); }
+  0%, 100% { transform: rotate(-1deg) scale(1); }
+  25% { transform: rotate(1deg) scale(1.02); }
+  50% { transform: rotate(-0.5deg) scale(1); }
+  75% { transform: rotate(0.5deg) scale(1.01); }
 }
 
 @keyframes remSleep {
